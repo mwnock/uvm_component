@@ -37,7 +37,7 @@ class gp_scoreboard #(type T=uvm_object, type M=uvm_object) extends uvm_scoreboa
     uvm_report_info("SCRBD", "write expected data");
     case(mode)
       8'h00, 8'h01 : exp_q.push_back(data);
-      8'h02   : marked_db[mark] = data;
+      8'h02   : marked_db[data.mark] = data;
       default : exp_q.push_back(data);
     endcase
   endfunction
@@ -142,11 +142,11 @@ class gp_scoreboard #(type T=uvm_object, type M=uvm_object) extends uvm_scoreboa
   ///   期待値を、指定したindexで管理し、同じindexの観測値が入力されたら
   ///   比較を行う。
   virtual function void mode2(T data, M mark);
-    if(marked_db.exists(mark))begin
-      data.compare(marked_db[mark]);
+    if(marked_db.exists(data.mark))begin
+      data.compare(marked_db[data.mark]);
     end else begin
-      uvm_report_info("SCRBD", "---------- following Marked Expected Data is not found. ----------");
-      mark.print;
+      uvm_report_info("SCRBD", "---------- following Observed Data exist, but Related Expected Data is not found. ----------");
+      data.print;
     end
   endfunction
 
