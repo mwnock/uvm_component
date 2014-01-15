@@ -1,4 +1,11 @@
+`ifndef _GP_SCOREBOARD
+`define _GP_SCOREBOARD
+
+`uvm_analysis_imp_decl(_obs)
+`uvm_analysis_imp_decl(_exp)
 class gp_scoreboard #(type T=uvm_object) extends uvm_scoreboard;
+  uvm_analysis_imp_obs #(T, gp_scoreboard#(T)) ap_obs;
+  uvm_analysis_imp_exp #(T, gp_scoreboard#(T)) ap_exp;
 
   `uvm_component_param_utils(gp_scoreboard#(T))
 
@@ -8,9 +15,12 @@ class gp_scoreboard #(type T=uvm_object) extends uvm_scoreboard;
 
   function new (string name, uvm_component parent);
     super.new(name, parent);
+    // gen analysis port
+    ap_obs = new("ap_obs", this);
+    ap_exp = new("ap_exp", this);
   endfunction : new
 
-  function void write_data(T data);
+  function void write_obs(T data);
     uvm_report_info("SCRBD", "write data");
     data_q.push_back(data);
   endfunction
@@ -24,7 +34,8 @@ class gp_scoreboard #(type T=uvm_object) extends uvm_scoreboard;
     T tmp_data0, tmp_data1;
     uvm_report_info("SCRBD", "Called run_phase");
     forever begin
-      while(data_q.size()==0) #1;
+      //while(data_q.size()==0) #1;
+      wait(data_q.size()!=0);
       tmp_data0 = new;
       tmp_data1 = new;
       tmp_data0 = data_q.pop_front();
@@ -38,3 +49,5 @@ class gp_scoreboard #(type T=uvm_object) extends uvm_scoreboard;
   endtask
 
 endclass
+
+`endif
