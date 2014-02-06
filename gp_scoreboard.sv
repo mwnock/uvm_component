@@ -17,7 +17,7 @@
 //   the License for the specific language governing
 //   permissions and limitations under the License.
 //----------------------------------------------------------------------
-// $Id: gp_scoreboard.sv,v 1.1 2014-02-06 05:55:59 mwnock Exp $
+// $Id: gp_scoreboard.sv,v 1.2 2014-02-06 08:41:27 mwnock Exp $
 //----------------------------------------------------------------------
 `ifndef _GP_SCOREBOARD
 `define _GP_SCOREBOARD
@@ -59,7 +59,7 @@ class gp_scoreboard #(type T=uvm_object, type M=uvm_object) extends uvm_scoreboa
     case(mode)
       8'h00, 8'h01 : exp_q.push_back(data);
 `ifdef _GP_SCOREBOARD_MODE2_MARK
-      8'h02   : marked_db[data.mark] = data;
+      8'h02   : marked_db[data.`_GP_SCOREBOARD_MODE2_MARK] = data;
 `endif
       default : exp_q.push_back(data);
     endcase
@@ -166,9 +166,10 @@ class gp_scoreboard #(type T=uvm_object, type M=uvm_object) extends uvm_scoreboa
   ///   比較を行う。
   virtual function void mode2(T data, M mark);
 `ifdef _GP_SCOREBOARD_MODE2_MARK
-  type `_GP_SCOREBOARD_MODE2_MARK mark;
-    if(marked_db.exists(data.mark))begin
-      data.compare(marked_db[data.mark]);
+//  type `_GP_SCOREBOARD_MODE2_MARK mark;
+    if(marked_db.exists(data.`_GP_SCOREBOARD_MODE2_MARK))begin
+      if(data.compare(marked_db[data.`_GP_SCOREBOARD_MODE2_MARK]))
+        uvm_report_info("SCRBD", $sformatf("data compare OK. addr=%02xh", data.addr));
     end else begin
       uvm_report_info("SCRBD", "---------- following Observed Data exist, but Related Expected Data is not found. ----------");
       data.print;
