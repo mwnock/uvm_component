@@ -1,5 +1,3 @@
-// $id$
-
 `ifndef _GP_SCOREBOARD
 `define _GP_SCOREBOARD
 
